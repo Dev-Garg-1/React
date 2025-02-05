@@ -53,3 +53,14 @@ React builds a virtual DOM tree where components are nested.
 
 Updates are optimized using reconciliation, meaning React only updates changed parts instead of re-rendering the entire UI.
 
+from usestate we get two things in array format (a value, and a function)
+
+the feature of react is that it updates the value that we want to update in the ui at all the occurences 
+by itself then we no longer need to change it everywhere in the code as we used to do in js 
+that is by first accessing the element by using document query selector and then changing the 
+inner html 
+
+this usestate is an example of hook 
+
+understood the concept of hooks by making a counter in which value decreases and increases upon 
+clicking the respective button 
