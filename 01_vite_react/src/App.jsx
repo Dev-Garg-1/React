@@ -1,6 +1,8 @@
+import Howdy from "./new"
+
 function App() {
   return (
-    <h1>Hello world!</h1>
+    <Howdy />
   )
 }
 
