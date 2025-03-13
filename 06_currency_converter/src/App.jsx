@@ -1,28 +1,38 @@
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import "./App.css";
 import { InputBox } from "./components";
 import useCurrencyInfo from "./hooks/useCurrencyInfo";
 
 function App() {
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState();
   const [from, setFrom] = useState("usd");
   const [to, setTo] = useState("inr");
   const [convertedAmount, setConvertedAmount] = useState(0);
 
   const currencyInfo = useCurrencyInfo(from);
 
-  const options = Object.keys(currencyInfo);
+  // Memoizing the options array to prevent unnecessary recalculations
+  const options = useMemo(() => Object.keys(currencyInfo), [currencyInfo]);
 
-  const swap = () => {
-    setFrom(to);
-    setTo(from);
-    setConvertedAmount(amount);
-    setAmount(convertedAmount);
-  };
+  // Optimized Swap function
+  const swap = useCallback(() => {
+    setFrom((prevFrom) => {
+      setTo(prevFrom);
+      return to;
+    });
 
-  const convert = () => {
-    setConvertedAmount(amount * currencyInfo[to]);
-  };
+    setAmount((prevAmount) => {
+      setConvertedAmount(prevAmount);
+      return convertedAmount;
+    })
+  }, [to, convertedAmount]);
+
+  // optimized conversion function
+  const convert = useCallback(() => {
+    if(currencyInfo[to]) {
+      setConvertedAmount(amount * currencyInfo[to]);
+    }
+  }, [amount, currencyInfo, to]);
 
   return (
     <div
@@ -43,10 +53,11 @@ function App() {
               <InputBox
                 label="From"
                 amount={amount}
+                placeholder="Enter Amount"
                 currencyOptions={options}
-                onCurrencyChange={(currency) => setAmount(amount)}
+                onCurrencyChange={setFrom}
                 selectCurrency={from}
-                onAmountChange={(amount) => setAmount(amount)}
+                onAmountChange={setAmount}
               />
             </div>
             <div className="relative w-full h-0.5">
@@ -62,8 +73,9 @@ function App() {
               <InputBox
                 label="To"
                 amount={convertedAmount}
+                placeholder="Converted Amount"
                 currencyOptions={options}
-                onCurrencyChange={(currency) => setTo(currency)}
+                onCurrencyChange={setTo}
                 selectCurrency={to}
                 amountDisable
               />

@@ -1,10 +1,12 @@
-import React, { useId } from "react";
+import React, { useCallback, useId } from "react";
+import PropTypes from 'react';
 
 function InputBox({
   label,
   amount,
-  onAmountChange,
-  onCurrencyChange,
+  placeholder,
+  onAmountChange = () => {},
+  onCurrencyChange = () => {},
   currencyOptions = [],
   selectCurrency = "usd",
   amountDisable = false,
@@ -12,6 +14,16 @@ function InputBox({
   className = "",
 }) {
   const amountInputId = useId();
+
+  //Memoized event handlers to prevent unnecessary re-renders
+  const handleAmountChange = useCallback(
+    (e) => onAmountChange(Number(e.target.value)),
+    [onAmountChange]
+)
+  const handleCurrencyChange = useCallback(
+    (e) => onCurrencyChange(e.target.value),
+    [onCurrencyChange]
+  )
 
   return (
     <div className={`bg-white p-3 rounded-lg text-sm flex ${className}`}>
@@ -26,12 +38,10 @@ function InputBox({
           id={amountInputId}
           className="outline-none w-full bg-transparent py-1.5"
           type="number"
-          placeholder="Amount"
+          placeholder={placeholder}
           disabled={amountDisable}
-          value={amount}
-          onChange={(e) =>
-            onAmountChange && onAmountChange(Number(e.target.value))
-          }
+          value={amount || ""}
+          onChange={handleAmountChange || 0}
         />
       </div>
       <div className="w-1/2 flex flex-wrap justify-end text-right">
@@ -39,7 +49,7 @@ function InputBox({
         <select
           className="rounded-lg px-1 py-1 bg-gray-100 cursor-pointer outline-none"
           value={selectCurrency}
-          onChange={(e) => onCurrencyChange && onCurrencyChange(e.target.value)}
+          onChange={handleCurrencyChange}
           disabled={currencyDisable}
         >
           {currencyOptions.map((currency) => (
@@ -51,6 +61,19 @@ function InputBox({
       </div>
     </div>
   );
+}
+
+//PropTypes for validation
+InputBox.PropTypes = {
+  lable: PropTypes.string,
+  amount: PropTypes.number,
+  onAmountChange: PropTypes.func,
+  onCurrencyChange: PropTypes.func,
+  currencyOptions: PropTypes.array,
+  selectCurrency: PropTypes.string,
+  amountDisable: PropTypes.bool,
+  currencyDisable: PropTypes.bool,
+  className: PropTypes.string,
 }
 
 export default InputBox;
