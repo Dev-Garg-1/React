@@ -1,10 +1,10 @@
 import './App.css'
+import { Header, Footer, Home } from './components'
 
 function App() {
-
   return (
     <>
-      <h1 className='text-3xl bg-orange-300'>hello react router dom.</h1>
+    
     </>
   )
 }
